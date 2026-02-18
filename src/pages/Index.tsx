@@ -1,12 +1,45 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import RainbowStripe from "@/components/RainbowStripe";
+import Masthead from "@/components/Masthead";
+import FilterBar from "@/components/FilterBar";
+import ArticleList from "@/components/ArticleList";
+import SiteFooter from "@/components/SiteFooter";
+import { useArticles } from "@/hooks/useArticles";
 
 const Index = () => {
+  const {
+    articles,
+    stats,
+    loading,
+    error,
+    filters,
+    setFilters,
+    sources,
+    isFiltered,
+    clearFilters,
+  } = useArticles();
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
+    <div className="min-h-screen bg-background">
+      <RainbowStripe />
+      <Masthead stats={stats} />
+      <FilterBar
+        filters={filters}
+        setFilters={setFilters}
+        sources={sources}
+        articleCount={articles.length}
+        isFiltered={isFiltered}
+        clearFilters={clearFilters}
+      />
+      <div className="pt-4">
+        <ArticleList
+          articles={articles}
+          loading={loading}
+          error={error}
+          isFiltered={isFiltered}
+          clearFilters={clearFilters}
+        />
       </div>
+      <SiteFooter />
     </div>
   );
 };
