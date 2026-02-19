@@ -38,10 +38,6 @@ export const TOPICS = [
 
 export const TIME_RANGES = [
   { label: "Today", value: "today" },
-  { label: "This Week", value: "this_week" },
-  { label: "Last Week", value: "last_week" },
-  { label: "Last Month", value: "last_month" },
-  { label: "Last Year", value: "last_year" },
 ] as const;
 
 export const TOPIC_COLORS: Record<string, { bg: string; text: string; border: string }> = {
