@@ -76,22 +76,24 @@ export function useArticles() {
         if (!match) return false;
       }
 
+      // Use published_at for date filtering (real article date), fall back to scraped_at
+      const articleDate = new Date(article.published_at || article.scraped_at);
+
       // Time range filter
       if (filters.timeRange) {
-        const scraped = new Date(article.scraped_at);
         const now = new Date();
         const startOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
         const today = startOfDay(now);
 
         switch (filters.timeRange) {
           case "today":
-            if (scraped < today) return false;
+            if (articleDate < today) return false;
             break;
           case "this_week": {
             const day = now.getDay();
             const monday = new Date(today);
             monday.setDate(today.getDate() - ((day + 6) % 7));
-            if (scraped < monday) return false;
+            if (articleDate < monday) return false;
             break;
           }
           case "last_week": {
@@ -100,33 +102,32 @@ export function useArticles() {
             thisMonday.setDate(today.getDate() - ((day + 6) % 7));
             const lastMonday = new Date(thisMonday);
             lastMonday.setDate(thisMonday.getDate() - 7);
-            if (scraped < lastMonday || scraped >= thisMonday) return false;
+            if (articleDate < lastMonday || articleDate >= thisMonday) return false;
             break;
           }
           case "last_month": {
             const monthAgo = new Date(today);
             monthAgo.setMonth(monthAgo.getMonth() - 1);
-            if (scraped < monthAgo) return false;
+            if (articleDate < monthAgo) return false;
             break;
           }
           case "last_year": {
             const yearAgo = new Date(today);
             yearAgo.setFullYear(yearAgo.getFullYear() - 1);
-            if (scraped < yearAgo) return false;
+            if (articleDate < yearAgo) return false;
             break;
           }
         }
       }
 
-      // Custom date range
+      // Custom date range (also uses published_at)
       if (filters.dateFrom) {
-        const from = new Date(filters.dateFrom);
-        if (new Date(article.scraped_at) < from) return false;
+        if (articleDate < new Date(filters.dateFrom)) return false;
       }
       if (filters.dateTo) {
         const to = new Date(filters.dateTo);
         to.setDate(to.getDate() + 1);
-        if (new Date(article.scraped_at) >= to) return false;
+        if (articleDate >= to) return false;
       }
 
       // Search
