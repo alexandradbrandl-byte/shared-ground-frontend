@@ -4,6 +4,7 @@ import FilterBar from "@/components/FilterBar";
 import ArticleGrid from "@/components/ArticleGrid";
 import SiteFooter from "@/components/SiteFooter";
 import AboutPage from "@/components/AboutPage";
+import ScrollButtons from "@/components/ScrollButtons";
 import { useArticles } from "@/hooks/useArticles";
 
 const Index = () => {
@@ -53,6 +54,7 @@ const Index = () => {
       )}
 
       <SiteFooter />
+      <ScrollButtons />
     </div>
   );
 };
