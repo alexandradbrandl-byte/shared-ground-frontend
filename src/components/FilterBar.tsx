@@ -1,50 +1,26 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { TOPICS } from "@/lib/constants";
 import { type Filters } from "@/hooks/useArticles";
-import { Search, X } from "lucide-react";
+import { Search, X, ChevronDown, Check } from "lucide-react";
 
-// All 37 sources — hardcoded so the dropdown is always complete
+// All sources — hardcoded so dropdown is always complete
 const ALL_SOURCES = [
   // General / World News
-  "BBC News",
-  "BBC News World",
-  "The Guardian",
-  "Reuters",
-  "Reuters World",
-  "Al Jazeera",
-  "NPR News",
-  "The Independent",
-  "HuffPost",
-  "New York Times",
-  "Associated Press",
-  "CNN World",
-  "Washington Post",
-  "Financial Times",
-  "CBC News World",
-  "ABC News",
-  "SBS News World",
-  "Le Monde",
-  "IPS News Agency",
-  "The Conversation",
-  "Global Voices",
-  "Fair Observer",
+  "BBC News", "BBC News World", "The Guardian", "Reuters", "Reuters World",
+  "Al Jazeera", "NPR News", "The Independent", "HuffPost", "New York Times",
+  "Associated Press", "CNN World", "Washington Post", "Financial Times",
+  "CBC News World", "ABC News", "SBS News World", "Le Monde", "IPS News Agency",
+  "The Conversation", "Global Voices", "Fair Observer",
+  // Progressive & Investigative
+  "AlterNet", "Democracy Now", "FSRN", "Jewish Voice for Peace",
+  "Le Monde Diplomatique", "The Progressive", "Reveal News",
+  "Accuracy in Media", "Media Matters", "Der Standard",
   // Women & Feminist
-  "The Guardian Women",
-  "Ms. Magazine",
-  "Feministing",
-  "Jezebel",
-  "Refinery29 Feminism",
-  "The Funambulist",
+  "The Guardian Women", "Ms. Magazine", "Feministing", "Jezebel",
+  "Refinery29 Feminism", "The Funambulist",
   // LGBTQIA+
-  "Gay Times",
-  "PinkNews",
-  "Out Magazine",
-  "LGBTQ Nation",
-  "Advocate",
-  "Autostraddle",
-  "Them",
-  "Queerty",
-  "Xtra Magazine",
+  "Gay Times", "PinkNews", "Out Magazine", "LGBTQ Nation", "Advocate",
+  "Autostraddle", "Them", "Queerty", "Xtra Magazine",
 ];
 
 interface FilterBarProps {
@@ -64,8 +40,11 @@ const FilterBar = ({
   clearFilters,
 }: FilterBarProps) => {
   const [searchInput, setSearchInput] = useState(filters.search);
+  const [sourceOpen, setSourceOpen] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+  const sourceRef = useRef<HTMLDivElement>(null);
 
+  // Debounced search
   useEffect(() => {
     clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
@@ -74,17 +53,44 @@ const FilterBar = ({
     return () => clearTimeout(debounceRef.current);
   }, [searchInput, setFilters]);
 
+  // Close source dropdown on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (sourceRef.current && !sourceRef.current.contains(e.target as Node)) {
+        setSourceOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
   const toggleTopic = useCallback(
     (label: string) => {
       setFilters((f) => {
         if (label === "All Topics") return { ...f, selectedTopics: [] };
-        const current = f.selectedTopics;
-        const next = current.includes(label)
-          ? current.filter((t) => t !== label)
-          : [...current, label];
+        const next = f.selectedTopics.includes(label)
+          ? f.selectedTopics.filter((t) => t !== label)
+          : [...f.selectedTopics, label];
         return { ...f, selectedTopics: next };
       });
     },
+    [setFilters]
+  );
+
+  const toggleSource = useCallback(
+    (s: string) => {
+      setFilters((f) => {
+        const next = f.selectedSources.includes(s)
+          ? f.selectedSources.filter((x) => x !== s)
+          : [...f.selectedSources, s];
+        return { ...f, selectedSources: next };
+      });
+    },
+    [setFilters]
+  );
+
+  const clearSources = useCallback(
+    () => setFilters((f) => ({ ...f, selectedSources: [] })),
     [setFilters]
   );
 
@@ -110,15 +116,18 @@ const FilterBar = ({
     [setFilters]
   );
 
-  const setSource = useCallback(
-    (v: string) => setFilters((f) => ({ ...f, source: v })),
-    [setFilters]
-  );
+  const sourceLabel =
+    filters.selectedSources.length === 0
+      ? "All Sources"
+      : filters.selectedSources.length === 1
+      ? filters.selectedSources[0]
+      : `${filters.selectedSources.length} sources`;
 
   return (
     <div className="sticky top-0 z-30 bg-card border-b border-border">
       <div className="max-w-[1100px] mx-auto px-4 py-3 space-y-3">
-        {/* ROW A — Topics */}
+
+        {/* ROW A — Topics (horizontally scrollable) */}
         <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
           {TOPICS.map((t) => {
             const isAll = t.label === "All Topics";
@@ -132,11 +141,9 @@ const FilterBar = ({
                 className={`
                   flex-shrink-0 px-3 py-1.5 rounded-sm text-xs font-medium transition-colors
                   whitespace-nowrap select-none
-                  ${
-                    active
-                      ? "bg-chip-active text-chip-active-foreground"
-                      : "bg-secondary text-secondary-foreground hover:bg-border"
-                  }
+                  ${active
+                    ? "bg-chip-active text-chip-active-foreground"
+                    : "bg-secondary text-secondary-foreground hover:bg-border"}
                 `}
               >
                 {t.emoji} {t.label}
@@ -145,17 +152,15 @@ const FilterBar = ({
           })}
         </div>
 
-        {/* ROW B — Today + Custom Date */}
+        {/* ROW B — Today + Custom Date Range */}
         <div className="flex flex-wrap items-center gap-2">
           <button
             onClick={selectToday}
             className={`
               px-3 py-1.5 rounded-sm text-xs font-medium transition-colors whitespace-nowrap select-none
-              ${
-                filters.timeRange === "today"
-                  ? "bg-chip-active text-chip-active-foreground"
-                  : "bg-secondary text-secondary-foreground hover:bg-border"
-              }
+              ${filters.timeRange === "today"
+                ? "bg-chip-active text-chip-active-foreground"
+                : "bg-secondary text-secondary-foreground hover:bg-border"}
             `}
           >
             Today
@@ -165,7 +170,7 @@ const FilterBar = ({
             type="date"
             value={filters.dateFrom}
             onChange={(e) => setDateFrom(e.target.value)}
-            className="text-xs px-2 py-1.5 rounded-sm border border-border bg-card text-foreground"
+            className="text-xs px-2 py-1.5 rounded-sm border border-border bg-card text-foreground w-full sm:w-auto"
             aria-label="Date from"
           />
           <span className="text-xs text-muted-foreground">to</span>
@@ -173,7 +178,7 @@ const FilterBar = ({
             type="date"
             value={filters.dateTo}
             onChange={(e) => setDateTo(e.target.value)}
-            className="text-xs px-2 py-1.5 rounded-sm border border-border bg-card text-foreground"
+            className="text-xs px-2 py-1.5 rounded-sm border border-border bg-card text-foreground w-full sm:w-auto"
             aria-label="Date to"
           />
           {(filters.dateFrom || filters.dateTo) && (
@@ -187,9 +192,11 @@ const FilterBar = ({
           )}
         </div>
 
-        {/* ROW C — Search, Source, Clear, Count */}
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="relative flex-1 min-w-[180px] max-w-[320px]">
+        {/* ROW C — Search + Multi-Source dropdown + Clear + Count */}
+        <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-2">
+
+          {/* Search */}
+          <div className="relative flex-1 min-w-0 sm:min-w-[180px] sm:max-w-[320px]">
             <Search
               size={14}
               className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground"
@@ -202,32 +209,67 @@ const FilterBar = ({
               className="w-full text-xs pl-8 pr-3 py-1.5 rounded-sm border border-border bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
             />
           </div>
-          <select
-            value={filters.source}
-            onChange={(e) => setSource(e.target.value)}
-            className="text-xs px-2 py-1.5 rounded-sm border border-border bg-card text-foreground"
-          >
-            <option value="">All Sources</option>
-            {ALL_SOURCES.map((s) => (
-              <option key={s} value={s}>
-                {s}
-              </option>
-            ))}
-          </select>
-          {isFiltered && (
+
+          {/* Multi-select source dropdown */}
+          <div ref={sourceRef} className="relative">
             <button
-              onClick={() => {
-                clearFilters();
-                setSearchInput("");
-              }}
-              className="text-xs text-primary hover:underline font-medium"
+              onClick={() => setSourceOpen((o) => !o)}
+              className="flex items-center gap-1.5 text-xs px-2 py-1.5 rounded-sm border border-border bg-card text-foreground whitespace-nowrap w-full sm:w-auto justify-between"
             >
-              Clear all filters
+              <span className={filters.selectedSources.length > 0 ? "text-foreground font-medium" : "text-muted-foreground"}>
+                {sourceLabel}
+              </span>
+              <ChevronDown size={12} className={`transition-transform ${sourceOpen ? "rotate-180" : ""}`} />
             </button>
-          )}
-          <span className="ml-auto text-xs text-muted-foreground whitespace-nowrap">
-            {articleCount} article{articleCount !== 1 ? "s" : ""}
-          </span>
+
+            {sourceOpen && (
+              <div className="absolute top-full left-0 mt-1 w-64 max-h-72 overflow-y-auto bg-card border border-border rounded-sm shadow-lg z-50">
+                {/* Clear selection row */}
+                {filters.selectedSources.length > 0 && (
+                  <button
+                    onClick={clearSources}
+                    className="w-full text-left px-3 py-2 text-xs text-primary hover:bg-secondary border-b border-border font-medium"
+                  >
+                    Clear selection ({filters.selectedSources.length})
+                  </button>
+                )}
+                {ALL_SOURCES.map((s) => {
+                  const checked = filters.selectedSources.includes(s);
+                  return (
+                    <label
+                      key={s}
+                      className="flex items-center gap-2.5 px-3 py-2 text-xs hover:bg-secondary cursor-pointer"
+                    >
+                      <span className={`flex-shrink-0 w-3.5 h-3.5 border rounded-none flex items-center justify-center ${checked ? "bg-chip-active border-chip-active" : "border-border bg-background"}`}>
+                        {checked && <Check size={9} className="text-chip-active-foreground" />}
+                      </span>
+                      <span className={checked ? "text-foreground font-medium" : "text-muted-foreground"}>
+                        {s}
+                      </span>
+                    </label>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* Clear all + count */}
+          <div className="flex items-center gap-2 sm:ml-auto">
+            {isFiltered && (
+              <button
+                onClick={() => {
+                  clearFilters();
+                  setSearchInput("");
+                }}
+                className="text-xs text-primary hover:underline font-medium whitespace-nowrap"
+              >
+                Clear all
+              </button>
+            )}
+            <span className="text-xs text-muted-foreground whitespace-nowrap">
+              {articleCount} article{articleCount !== 1 ? "s" : ""}
+            </span>
+          </div>
         </div>
       </div>
     </div>
