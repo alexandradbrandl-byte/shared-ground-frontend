@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { TOPICS, TIME_RANGES } from "@/lib/constants";
+import { TOPICS } from "@/lib/constants";
 import { type Filters } from "@/hooks/useArticles";
 import { Search, X } from "lucide-react";
 
@@ -45,17 +45,14 @@ const FilterBar = ({
     [setFilters]
   );
 
-  const selectTime = useCallback(
-    (value: string) => {
-      setFilters((f) => ({
-        ...f,
-        timeRange: f.timeRange === value ? null : value,
-        dateFrom: "",
-        dateTo: "",
-      }));
-    },
-    [setFilters]
-  );
+  const selectToday = useCallback(() => {
+    setFilters((f) => ({
+      ...f,
+      timeRange: f.timeRange === "today" ? null : "today",
+      dateFrom: "",
+      dateTo: "",
+    }));
+  }, [setFilters]);
 
   const setDateFrom = useCallback(
     (v: string) => setFilters((f) => ({ ...f, dateFrom: v, timeRange: null })),
@@ -105,30 +102,27 @@ const FilterBar = ({
           })}
         </div>
 
-        {/* ROW B — Time */}
+        {/* ROW B — Today + Custom Date */}
         <div className="flex flex-wrap items-center gap-2">
-          {TIME_RANGES.map((t) => (
-            <button
-              key={t.value}
-              onClick={() => selectTime(t.value)}
-              className={`
-                px-3 py-1.5 rounded-sm text-xs font-medium transition-colors whitespace-nowrap select-none
-                ${
-                  filters.timeRange === t.value
-                    ? "bg-chip-active text-chip-active-foreground"
-                    : "bg-secondary text-secondary-foreground hover:bg-border"
-                }
-              `}
-            >
-              {t.label}
-            </button>
-          ))}
+          <button
+            onClick={selectToday}
+            className={`
+              px-3 py-1.5 rounded-sm text-xs font-medium transition-colors whitespace-nowrap select-none
+              ${
+                filters.timeRange === "today"
+                  ? "bg-chip-active text-chip-active-foreground"
+                  : "bg-secondary text-secondary-foreground hover:bg-border"
+              }
+            `}
+          >
+            Today
+          </button>
           <span className="hidden sm:inline text-muted-foreground text-xs mx-1">📅</span>
           <input
             type="date"
             value={filters.dateFrom}
             onChange={(e) => setDateFrom(e.target.value)}
-            className="text-xs px-2 py-1.5 rounded-md border border-border bg-card text-foreground"
+            className="text-xs px-2 py-1.5 rounded-sm border border-border bg-card text-foreground"
             aria-label="Date from"
           />
           <span className="text-xs text-muted-foreground">to</span>
@@ -136,7 +130,7 @@ const FilterBar = ({
             type="date"
             value={filters.dateTo}
             onChange={(e) => setDateTo(e.target.value)}
-            className="text-xs px-2 py-1.5 rounded-md border border-border bg-card text-foreground"
+            className="text-xs px-2 py-1.5 rounded-sm border border-border bg-card text-foreground"
             aria-label="Date to"
           />
           {(filters.dateFrom || filters.dateTo) && (
@@ -162,13 +156,13 @@ const FilterBar = ({
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               placeholder="Search headlines…"
-              className="w-full text-xs pl-8 pr-3 py-1.5 rounded-md border border-border bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+              className="w-full text-xs pl-8 pr-3 py-1.5 rounded-sm border border-border bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
             />
           </div>
           <select
             value={filters.source}
             onChange={(e) => setSource(e.target.value)}
-            className="text-xs px-2 py-1.5 rounded-md border border-border bg-card text-foreground"
+            className="text-xs px-2 py-1.5 rounded-sm border border-border bg-card text-foreground"
           >
             <option value="">All Sources</option>
             {sources.map((s) => (

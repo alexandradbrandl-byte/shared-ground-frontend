@@ -1,7 +1,7 @@
 import type { Config } from "tailwindcss";
 
 export default {
-  // No dark mode
+  darkMode: "class",
   content: ["./pages/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./app/**/*.{ts,tsx}", "./src/**/*.{ts,tsx}"],
   prefix: "",
   theme: {
@@ -16,7 +16,6 @@ export default {
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
         'serif-display': ['"Playfair Display"', 'serif'],
-        'serif-body': ['Lora', 'serif'],
       },
       colors: {
         border: "hsl(var(--border))",
