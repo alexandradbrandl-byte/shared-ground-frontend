@@ -1,5 +1,4 @@
 import { useState } from "react";
-import RainbowStripe from "@/components/RainbowStripe";
 import Masthead from "@/components/Masthead";
 import FilterBar from "@/components/FilterBar";
 import ArticleGrid from "@/components/ArticleGrid";
@@ -23,7 +22,6 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <RainbowStripe />
       <Masthead
         stats={stats}
         showAbout={showAbout}
