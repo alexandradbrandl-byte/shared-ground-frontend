@@ -1,7 +1,7 @@
-import { type Article } from "@/lib/constants";
-import ArticleCard from "./ArticleCard";
+import ArticleCard from "@/components/ArticleCard";
+import type { Article } from "@/lib/constants";
 
-interface ArticleGridProps {
+interface Props {
   articles: Article[];
   loading: boolean;
   error: string | null;
@@ -9,33 +9,22 @@ interface ArticleGridProps {
   clearFilters: () => void;
 }
 
-const SkeletonTile = () => (
-  <div className="bg-card border border-border rounded-sm overflow-hidden animate-pulse">
-    <div className="h-[3px] bg-secondary" />
-    <div className="p-5 space-y-3">
-      <div className="flex justify-between">
-        <div className="h-4 w-16 rounded-sm bg-secondary" />
-        <div className="h-4 w-20 rounded-sm bg-secondary" />
-      </div>
-      <div className="h-6 w-3/4 rounded-sm bg-secondary" />
-      <div className="h-5 w-full rounded-sm bg-secondary" />
-      <div className="h-4 w-5/6 rounded-sm bg-secondary" />
-      <div className="flex gap-1.5">
-        <div className="h-4 w-16 rounded-sm bg-secondary" />
-        <div className="h-4 w-20 rounded-sm bg-secondary" />
-      </div>
-      <div className="h-3 w-24 rounded-sm bg-secondary" />
-    </div>
-  </div>
+const SkeletonCard = ({ tall = false }: { tall?: boolean }) => (
+  <div className={`bg-card border border-border animate-pulse rounded-sm ${tall ? "h-72" : "h-48"}`} />
 );
 
-const ArticleGrid = ({ articles, loading, error, isFiltered, clearFilters }: ArticleGridProps) => {
+const ArticleGrid = ({ articles, loading, error, isFiltered, clearFilters }: Props) => {
+
   if (loading) {
     return (
-      <div className="max-w-[1100px] mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-        {Array.from({ length: 6 }).map((_, i) => (
-          <SkeletonTile key={i} />
-        ))}
+      <div className="max-w-[1100px] mx-auto px-4 space-y-4">
+        <SkeletonCard tall />
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <SkeletonCard /><SkeletonCard /><SkeletonCard />
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
+        </div>
       </div>
     );
   }
@@ -43,7 +32,7 @@ const ArticleGrid = ({ articles, loading, error, isFiltered, clearFilters }: Art
   if (error) {
     return (
       <div className="max-w-[1100px] mx-auto px-4 py-16 text-center">
-        <p className="text-muted-foreground">{error}</p>
+        <p className="text-muted-foreground text-sm">{error}</p>
       </div>
     );
   }
@@ -51,25 +40,50 @@ const ArticleGrid = ({ articles, loading, error, isFiltered, clearFilters }: Art
   if (articles.length === 0) {
     return (
       <div className="max-w-[1100px] mx-auto px-4 py-16 text-center">
-        <p className="text-muted-foreground">No articles match your filters.</p>
+        <p className="text-muted-foreground text-sm mb-3">Keine Artikel gefunden.</p>
         {isFiltered && (
-          <button
-            onClick={clearFilters}
-            className="mt-2 text-sm text-primary hover:underline font-medium"
-          >
-            Clear filters
+          <button onClick={clearFilters} className="text-xs text-primary hover:underline font-medium">
+            Filter zurücksetzen
           </button>
         )}
       </div>
     );
   }
 
+  const hero = articles[0];
+  const featured = articles.slice(1, 4);
+  const rest = articles.slice(4);
+
   return (
-    <main className="max-w-[1100px] mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-      {articles.map((article) => (
-        <ArticleCard key={article.id} article={article} />
-      ))}
-    </main>
+    <div className="max-w-[1100px] mx-auto px-4 space-y-4">
+
+      {/* Hero */}
+      <ArticleCard article={hero} variant="hero" />
+
+      {/* Featured row (3 mittlere Kacheln) */}
+      {featured.length > 0 && (
+        <div
+          className="grid gap-4"
+          style={{ gridTemplateColumns: `repeat(${featured.length}, 1fr)` }}
+        >
+          {featured.map((a) => (
+            <ArticleCard key={a.id} article={a} variant="medium" />
+          ))}
+        </div>
+      )}
+
+      {rest.length > 0 && <div className="border-t border-border pt-1" />}
+
+      {/* Standard grid */}
+      {rest.length > 0 && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {rest.map((a) => (
+            <ArticleCard key={a.id} article={a} variant="default" />
+          ))}
+        </div>
+      )}
+
+    </div>
   );
 };
 
