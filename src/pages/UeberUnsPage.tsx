@@ -78,13 +78,8 @@ const UeberUnsPage = () => {
 
         <SectionHeading>Kontakt</SectionHeading>
         <p className="text-[0.9rem] text-muted-foreground leading-relaxed">
-          Fragen, Feedback oder Quellenvorschläge?{" "}
-          
-            href="mailto:alexandra.d.brandl@gmail.com"
-            className="text-foreground underline underline-offset-2 hover:opacity-70 transition-opacity"
-          >
-            Schreib uns.
-          </a>
+          Fragen, Feedback oder Quellenvorschlaege?
+          <a href="mailto:alexandra.d.brandl@gmail.com" className="text-foreground underline underline-offset-2 hover:opacity-70 transition-opacity"> Schreib uns.</a>
         </p>
 
         <p className="mt-12 text-xs text-muted-foreground border-t border-border pt-4">
