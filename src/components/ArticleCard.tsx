@@ -11,7 +11,7 @@ interface Props {
 const TOPIC_ICONS: Record<string, string> = {
   "Reproduktive Rechte":    "🩺",
   "Lohnlücke & Wirtschaft": "💰",
-  "LGBTQIA+":               "🏳️‍🌈",
+  "LGBTQIA+":               "🏳‍🌈",
   "Migration & Asyl":       "🌍",
   "Menschenrechte":         "⚖️",
   "Gesundheit & Medizin":   "🏥",
@@ -75,7 +75,6 @@ const ArticleCard = ({ article, variant = "default" }: Props) => {
   const date = formatDate(article.published_at || article.scraped_at);
   const imageUrl = article.image_url;
 
-  // ── HERO ──────────────────────────────────────────────────────────────────
   if (variant === "hero") {
     return (
       <article className="group bg-card border border-border overflow-hidden hover:shadow-md transition-shadow">
@@ -124,7 +123,7 @@ const ArticleCard = ({ article, variant = "default" }: Props) => {
                 rel="noopener noreferrer"
                 className="text-xs font-semibold text-primary hover:underline underline-offset-2"
               >
-                Artikel lesen →
+                {"Artikel lesen \u2192"}
               </a>
             </div>
           </div>
@@ -133,7 +132,6 @@ const ArticleCard = ({ article, variant = "default" }: Props) => {
     );
   }
 
-  // ── MEDIUM ────────────────────────────────────────────────────────────────
   if (variant === "medium") {
     return (
       <article
@@ -171,7 +169,7 @@ const ArticleCard = ({ article, variant = "default" }: Props) => {
               rel="noopener noreferrer"
               className="text-xs text-primary hover:underline underline-offset-2 font-medium"
             >
-              Artikel lesen →
+              {"Artikel lesen \u2192"}
             </a>
           </div>
         </div>
@@ -179,7 +177,6 @@ const ArticleCard = ({ article, variant = "default" }: Props) => {
     );
   }
 
-  // ── DEFAULT ───────────────────────────────────────────────────────────────
   return (
     <article
       className="group bg-card border border-border overflow-hidden hover:shadow-sm transition-shadow flex flex-col h-full"
@@ -221,7 +218,7 @@ const ArticleCard = ({ article, variant = "default" }: Props) => {
             rel="noopener noreferrer"
             className="text-xs text-primary hover:underline underline-offset-2"
           >
-            Artikel lesen →
+            {"Artikel lesen \u2192"}
           </a>
         </div>
       </div>
