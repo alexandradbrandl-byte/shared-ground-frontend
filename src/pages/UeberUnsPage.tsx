@@ -1,130 +1,57 @@
+import { Link } from "react-router-dom";
 import Masthead from "@/components/Masthead";
 import SiteFooter from "@/components/SiteFooter";
 
-const QUELLEN = {
-  "Allgemeine Nachrichten (nach Keywords gefiltert)": [
-    "Der Spiegel", "Zeit Online", "Süddeutsche Zeitung", "taz",
-    "Frankfurter Rundschau", "Der Standard", "Der Falter", "NZZ",
-    "SRF News", "ARD", "ZDF", "ORF", "Deutschlandfunk", "MDR", "WDR", "RBB",
-  ],
-  "Feministische Publikationen (alle Artikel)": ["EMMA", "Missy Magazine"],
-  "LGBTQIA+ Publikationen (alle Artikel)": ["queer.de", "L-MAG"],
-};
-
-const KEYWORDS = {
-  "Frauen & Feminismus": [
-    "Frauen", "Frau", "Feminismus", "Gleichstellung", "Lohnlücke",
-    "reproduktive Rechte", "Abtreibung", "Frauenrechte", "Sexismus",
-    "Misogynie", "Patriarchat", "Periodenarmut", "Frauengesundheit",
-    "häusliche Gewalt", "sexuelle Belästigung", "Femizid", "Elternzeit",
-    "körperliche Selbstbestimmung", "Verhütung", "IVF",
-  ],
-  "LGBTQIA+": [
-    "LGBT", "queer", "schwul", "lesbisch", "bisexuell", "transgender",
-    "trans", "nicht-binär", "intersexuell", "asexuell", "Pride",
-    "Coming Out", "Homo-Ehe", "Trans-Rechte", "Homophobie", "Transphobie",
-    "Pronomen", "Drag Queen",
-  ],
-  "Migration & Asyl": [
-    "Migration", "Flüchtling", "Asyl", "Asylsuchende", "Abschiebung",
-    "Grenze", "Staatsbürgerschaft", "Vertreibung", "Xenophobie",
-  ],
-  "Menschenrechte": [
-    "Menschenrechte", "Bürgerrechte", "Diskriminierung",
-    "Gleichheit", "Gerechtigkeit", "Rassismus", "Antirassismus",
-    "Protest", "Aktivismus", "Pressefreiheit", "Behindertenrechte",
-  ],
-};
-
-const THEMEN_LISTE = [
-  { emoji: "🩺", label: "Reproduktive Rechte" },
-  { emoji: "💰", label: "Lohnlücke & Wirtschaft" },
-  { emoji: "🏳️‍🌈", label: "LGBTQIA+" },
-  { emoji: "🌍", label: "Migration & Asyl" },
-  { emoji: "⚖️", label: "Menschenrechte" },
-  { emoji: "🏥", label: "Gesundheit & Medizin" },
-  { emoji: "📜", label: "Recht & Justiz" },
-  { emoji: "🏛️", label: "Politik & Gesellschaft" },
-  { emoji: "🎭", label: "Kultur & Medien" },
-  { emoji: "⚽", label: "Sport" },
-  { emoji: "🛡️", label: "Gewalt & Sicherheit" },
-  { emoji: "💼", label: "Arbeit & Wirtschaft" },
+const THEMEN = [
+  {
+    emoji: "♀️",
+    label: "Frauen & Feminismus",
+    beschreibung: "Gleichstellung, Lohnlücke, reproduktive Rechte, Frauengesundheit, häusliche Gewalt, Femizid, körperliche Selbstbestimmung und mehr.",
+    keywords: ["Frauen", "Frau", "Feminismus", "Gleichstellung", "Lohnlücke", "reproduktive Rechte", "Abtreibung", "Frauenrechte", "Sexismus", "Misogynie", "Patriarchat", "Periodenarmut", "Frauengesundheit", "häusliche Gewalt", "sexuelle Belästigung", "Femizid", "Elternzeit", "körperliche Selbstbestimmung", "Verhütung", "IVF"],
+  },
+  {
+    emoji: "🏳️‍🌈",
+    label: "LGBTQIA+",
+    beschreibung: "Queer-Rechte, Trans-Sichtbarkeit, Homophobie, Pride, Coming Out, Gleichstellung und gesellschaftliche Akzeptanz.",
+    keywords: ["LGBT", "queer", "schwul", "lesbisch", "bisexuell", "transgender", "trans", "nicht-binär", "intersexuell", "asexuell", "Pride", "Coming Out", "Homo-Ehe", "Trans-Rechte", "Homophobie", "Transphobie", "Pronomen", "Drag Queen", "Diskriminierung", "Gleichheit", "Gerechtigkeit", "Aktivismus"],
+  },
 ];
 
-const SectionHeading = ({ children }: { children: React.ReactNode }) => (
-  <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground border-b border-border pb-2 mb-4 mt-10 font-sans">
-    {children}
-  </h2>
-);
-
-const UeberUnsPage = () => {
+const ThemenPage = () => {
   return (
     <div className="min-h-screen bg-background">
       <Masthead />
-      <main className="max-w-[700px] mx-auto px-4 py-8 font-sans">
-
-        <p className="text-[0.95rem] text-foreground leading-relaxed">
-          <strong>shared ground</strong> ist ein unabhängiger Nachrichtenaggregator
-          für feministische, queere und LGBTQIA+ Berichterstattung aus dem deutschsprachigen Raum.
-          Wir machen Nachrichten sichtbar, die normalerweise untergehen.
-          Artikel werden alle 12 Stunden aus RSS-Feeds bezogen.
+      <main className="max-w-[1100px] mx-auto px-4 py-10">
+        <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground border-b border-border pb-2 mb-8 font-sans">
+          Themen
+        </h2>
+        <p className="text-[0.95rem] text-muted-foreground font-sans mb-10 max-w-[600px]">
+          Shared Ground bündelt Nachrichten aus zwei Themenbereichen. Klicke auf ein Thema um direkt zum gefilterten Feed zu gelangen.
         </p>
-
-        <SectionHeading>Unsere Quellen</SectionHeading>
-        {Object.entries(QUELLEN).map(([kategorie, namen]) => (
-          <div key={kategorie} className="mb-5">
-            <p className="text-xs text-muted-foreground uppercase tracking-wider mb-2 font-medium">
-              {kategorie}
-            </p>
-            <p className="text-[0.9rem] text-foreground leading-relaxed">
-              {namen.join(" · ")}
-            </p>
-          </div>
-        ))}
-
-        <SectionHeading>Wie werden Artikel ausgewählt?</SectionHeading>
-        <p className="text-[0.9rem] text-muted-foreground leading-relaxed mb-6">
-          Allgemeine Nachrichtenquellen werden nur aufgenommen wenn sie Keywords enthalten. Spezialpublikationen werden vollständig übernommen.
-        </p>
-        {Object.entries(KEYWORDS).map(([kategorie, woerter]) => (
-          <div key={kategorie} className="mb-6">
-            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground mb-1">
-              {kategorie}
-            </p>
-            <p className="text-[0.8rem] text-muted-foreground leading-relaxed">
-              {woerter.join(", ")}
-            </p>
-          </div>
-        ))}
-
-        <SectionHeading>Themen</SectionHeading>
-        <p className="text-[0.9rem] text-muted-foreground leading-relaxed mb-4">
-          Artikel werden automatisch einem oder mehreren Themen zugeordnet.
-        </p>
-        <div className="flex flex-wrap gap-2">
-          {THEMEN_LISTE.map((t) => (
-            <span key={t.label} className="inline-block px-3 py-1 text-xs font-medium border border-border bg-secondary text-foreground rounded-sm">
-              {t.emoji} {t.label}
-            </span>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          {THEMEN.map((thema) => (
+            <Link
+              key={thema.label}
+              to={`/?topic=${encodeURIComponent(thema.label)}`}
+              className="group block border border-border rounded-sm p-6 hover:border-foreground transition-colors bg-background"
+            >
+              <div className="text-4xl mb-4">{thema.emoji}</div>
+              <h3 className="font-serif-display text-xl font-semibold text-foreground mb-3 group-hover:underline underline-offset-2">
+                {thema.label}
+              </h3>
+              <p className="text-[0.85rem] text-muted-foreground font-sans leading-relaxed mb-4">
+                {thema.beschreibung}
+              </p>
+              <p className="text-[0.75rem] text-muted-foreground font-sans leading-relaxed">
+                {thema.keywords.join(" · ")}
+              </p>
+            </Link>
           ))}
         </div>
-
-        <SectionHeading>Kontakt</SectionHeading>
-        <p className="text-[0.9rem] text-muted-foreground leading-relaxed">
-          Fragen, Feedback oder Quellenvorschläge?{" "}
-          <a href="mailto:alexandra.d.brandl@gmail.com" className="text-foreground underline underline-offset-2 hover:opacity-70 transition-opacity">
-            Schreib uns.
-          </a>
-        </p>
-
-        <p className="mt-12 text-xs text-muted-foreground border-t border-border pt-4">
-          shared ground · Aktualisierung alle 12 Stunden · Unabhängig & kostenlos
-        </p>
-
       </main>
       <SiteFooter />
     </div>
   );
 };
 
-export default UeberUnsPage;
+export default ThemenPage;
