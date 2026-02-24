@@ -1,6 +1,7 @@
 import { type Stats } from "@/lib/constants";
 import { format } from "date-fns";
 import { Link, useLocation } from "react-router-dom";
+import { useState } from "react";
 import ThemeToggle from "./ThemeToggle";
 
 interface MastheadProps {
@@ -8,13 +9,15 @@ interface MastheadProps {
 }
 
 const NAV_LINKS = [
-  { label: "Themen", to: "/themen" },
+  { label: "News Feed", to: "/" },
+  { label: "Analysis", to: "/analysis" },
   { label: "Über uns", to: "/ueber-uns" },
   { label: "Newsletter", to: "/newsletter" },
 ];
 
 const Masthead = ({ stats }: MastheadProps) => {
   const location = useLocation();
+  const [menuOpen, setMenuOpen] = useState(false);
   const lastScraped = stats?.last_scraped
     ? format(new Date(stats.last_scraped), "d MMM yyyy, HH:mm")
     : null;
@@ -35,21 +38,17 @@ const Masthead = ({ stats }: MastheadProps) => {
         </div>
 
         <div className="flex items-center gap-3 sm:ml-auto sm:flex-col sm:items-end sm:gap-2 relative z-10">
-          <div className="flex items-center gap-4">
-            {NAV_LINKS.map((link) => (
-              <Link
-                key={link.to}
-                to={link.to}
-                className={`text-xs font-sans transition-colors ${
-                  location.pathname === link.to
-                    ? "text-foreground font-semibold underline underline-offset-4"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {link.label}
-              </Link>
-            ))}
+          <div className="flex items-center gap-3">
             <ThemeToggle />
+            <button
+              onClick={() => setMenuOpen(true)}
+              className="flex flex-col gap-1.5 p-1 text-foreground hover:opacity-70 transition-opacity"
+              aria-label="Menu öffnen"
+            >
+              <span className="block w-5 h-0.5 bg-current" />
+              <span className="block w-5 h-0.5 bg-current" />
+              <span className="block w-5 h-0.5 bg-current" />
+            </button>
           </div>
 
           {location.pathname === "/" && stats && (
@@ -62,6 +61,37 @@ const Masthead = ({ stats }: MastheadProps) => {
       </div>
 
       <hr className="mt-4 border-border" />
+
+      {menuOpen && (
+        <div className="fixed inset-0 z-50 bg-background flex flex-col">
+          <div className="flex justify-between items-center px-6 pt-8 pb-6 border-b border-border">
+            <span className="font-serif-display text-2xl font-bold text-foreground">shared ground</span>
+            <button
+              onClick={() => setMenuOpen(false)}
+              className="text-2xl text-muted-foreground hover:text-foreground transition-colors"
+              aria-label="Menu schließen"
+            >
+              ✕
+            </button>
+          </div>
+          <nav className="flex flex-col px-6 pt-8 gap-6">
+            {NAV_LINKS.map((link) => (
+              <Link
+                key={link.to}
+                to={link.to}
+                onClick={() => setMenuOpen(false)}
+                className={`font-serif-display text-3xl font-bold transition-opacity ${
+                  location.pathname === link.to
+                    ? "text-foreground"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
+        </div>
+      )}
     </header>
   );
 };
