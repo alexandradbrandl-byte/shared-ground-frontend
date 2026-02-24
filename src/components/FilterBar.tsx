@@ -1,16 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { TOPICS } from "@/lib/constants";
 import { type Filters } from "@/hooks/useArticles";
 import { Search, X, ChevronDown, Check } from "lucide-react";
-
-// Alle Quellen — alphabetisch sortiert
-const ALL_SOURCES = [
-  "BR24", "Der Standard", "Deutschlandfunk", "Die Welt", "EMMA",
-  "FAZ", "Focus Online", "Freitag", "L-MAG", "MDR Nachrichten",
-  "NDR Nachrichten", "NZZ", "ORF News", "Spiegel Online", "SRF News",
-  "Stern", "Süddeutsche Zeitung", "Tagesspiegel", "Tagesschau",
-  "taz", "ZDF heute", "Zeit Online", "queer.de",
-];
 
 interface FilterBarProps {
   filters: Filters;
@@ -24,6 +14,7 @@ interface FilterBarProps {
 const FilterBar = ({
   filters,
   setFilters,
+  sources,
   articleCount,
   isFiltered,
   clearFilters,
@@ -33,7 +24,6 @@ const FilterBar = ({
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
   const sourceRef = useRef<HTMLDivElement>(null);
 
-  // Debounced search
   useEffect(() => {
     clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
@@ -42,7 +32,6 @@ const FilterBar = ({
     return () => clearTimeout(debounceRef.current);
   }, [searchInput, setFilters]);
 
-  // Dropdown schließen bei Klick außerhalb
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (sourceRef.current && !sourceRef.current.contains(e.target as Node)) {
@@ -52,19 +41,6 @@ const FilterBar = ({
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
-
-  const toggleTopic = useCallback(
-    (label: string) => {
-      setFilters((f) => {
-        if (label === "Alle Themen") return { ...f, selectedTopics: [] };
-        const next = f.selectedTopics.includes(label)
-          ? f.selectedTopics.filter((t) => t !== label)
-          : [...f.selectedTopics, label];
-        return { ...f, selectedTopics: next };
-      });
-    },
-    [setFilters]
-  );
 
   const toggleSource = useCallback(
     (s: string) => {
@@ -114,43 +90,17 @@ const FilterBar = ({
 
   return (
     <div className="sticky top-0 z-30 bg-card border-b border-border">
-      <div className="max-w-[1100px] mx-auto px-4 py-3 space-y-3">
+      <div className="max-w-[1100px] mx-auto px-4 py-3 space-y-2">
 
-        {/* ZEILE A — Themen (horizontal scrollbar) */}
-        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-          {TOPICS.map((t) => {
-            const isAll = t.label === "Alle Themen";
-            const active = isAll
-              ? filters.selectedTopics.length === 0
-              : filters.selectedTopics.includes(t.label);
-            return (
-              <button
-                key={t.label}
-                onClick={() => toggleTopic(t.label)}
-                className={`
-                  flex-shrink-0 px-3 py-1.5 rounded-sm text-xs font-medium transition-colors
-                  whitespace-nowrap select-none
-                  ${active
-                    ? "bg-chip-active text-chip-active-foreground"
-                    : "bg-secondary text-secondary-foreground hover:bg-border"}
-                `}
-              >
-                {t.emoji} {t.label}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* ZEILE B — Heute + Datumsbereich */}
+        {/* ROW A — Heute + Datumsbereich */}
         <div className="flex flex-wrap items-center gap-2">
           <button
             onClick={selectToday}
-            className={`
-              px-3 py-1.5 rounded-sm text-xs font-medium transition-colors whitespace-nowrap select-none
-              ${filters.timeRange === "today"
+            className={`px-3 py-1.5 rounded-sm text-xs font-medium transition-colors whitespace-nowrap select-none ${
+              filters.timeRange === "today"
                 ? "bg-chip-active text-chip-active-foreground"
-                : "bg-secondary text-secondary-foreground hover:bg-border"}
-            `}
+                : "bg-secondary text-secondary-foreground hover:bg-border"
+            }`}
           >
             Heute
           </button>
@@ -171,25 +121,17 @@ const FilterBar = ({
             aria-label="Bis Datum"
           />
           {(filters.dateFrom || filters.dateTo) && (
-            <button
-              onClick={clearDates}
-              className="text-muted-foreground hover:text-foreground transition-colors"
-              aria-label="Datum zurücksetzen"
-            >
+            <button onClick={clearDates} className="text-muted-foreground hover:text-foreground transition-colors">
               <X size={14} />
             </button>
           )}
         </div>
 
-        {/* ZEILE C — Suche + Quellen-Dropdown + Zurücksetzen + Anzahl */}
+        {/* ROW B — Suche + Quellen + Zurücksetzen + Anzahl */}
         <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-2">
 
-          {/* Suche */}
           <div className="relative flex-1 min-w-0 sm:min-w-[180px] sm:max-w-[320px]">
-            <Search
-              size={14}
-              className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground"
-            />
+            <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
             <input
               type="text"
               value={searchInput}
@@ -199,7 +141,6 @@ const FilterBar = ({
             />
           </div>
 
-          {/* Quellen-Dropdown */}
           <div ref={sourceRef} className="relative">
             <button
               onClick={() => setSourceOpen((o) => !o)}
@@ -221,7 +162,7 @@ const FilterBar = ({
                     Auswahl löschen ({filters.selectedSources.length})
                   </button>
                 )}
-                {ALL_SOURCES.map((s) => {
+                {sources.map((s) => {
                   const checked = filters.selectedSources.includes(s);
                   return (
                     <label
@@ -242,24 +183,21 @@ const FilterBar = ({
             )}
           </div>
 
-          {/* Alles löschen + Anzahl */}
           <div className="flex items-center gap-2 sm:ml-auto">
             {isFiltered && (
               <button
-                onClick={() => {
-                  clearFilters();
-                  setSearchInput("");
-                }}
+                onClick={() => { clearFilters(); setSearchInput(""); }}
                 className="text-xs text-primary hover:underline font-medium whitespace-nowrap"
               >
                 Alles löschen
               </button>
             )}
             <span className="text-xs text-muted-foreground whitespace-nowrap">
-              {articleCount} {articleCount !== 1 ? "Artikel" : "Artikel"}
+              {articleCount} Artikel
             </span>
           </div>
         </div>
+
       </div>
     </div>
   );
