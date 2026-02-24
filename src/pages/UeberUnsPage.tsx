@@ -97,7 +97,8 @@ const UeberUnsPage = () => {
           </div>
         ))}
 
-        <SectionHeading>Wie werden Artikel ausgewählt?</SectionHeading>
         <p className="text-[0.9rem] text-muted-foreground leading-relaxed mb-6">
           Bei allgemeinen Nachrichtenquellen werden Artikel nur aufgenommen, wenn sie mindestens
-          eines der folgenden Keywords in Titel
+          eines der folgenden Keywords in Titel oder Zusammenfassung enthalten.
+          Spezialpublikationen (Feminismus, LGBTQIA+) werden vollständig übernommen.
+        </p>
