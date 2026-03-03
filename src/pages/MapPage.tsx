@@ -5,10 +5,22 @@ import { ComposableMap, Geographies, Geography, ZoomableGroup } from "react-simp
 const GEO_URL = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
 
 const LIVE_COUNTRIES: Record<string, { name: string; path: string }> = {
-  "276": { name: "Deutschland", path: "/de" },
+  // DACH
+  "276": { name: "Deutschland",  path: "/de" },
   "40":  { name: "\u00d6sterreich", path: "/at" },
   "040": { name: "\u00d6sterreich", path: "/at" },
-  "756": { name: "Schweiz", path: "/ch" },
+  "756": { name: "Schweiz",      path: "/ch" },
+  // Neu
+  "724": { name: "Spanien",      path: "/es" },
+  "380": { name: "Italien",      path: "/it" },
+  "840": { name: "USA",          path: "/us" },
+  "156": { name: "China",        path: "/cn" },
+  "800": { name: "Uganda",       path: "/ug" },
+  "246": { name: "Finnland",     path: "/fi" },
+  "792": { name: "T\u00fcrkei",  path: "/tr" },
+  "364": { name: "Iran",         path: "/ir" },
+  "710": { name: "S\u00fcdafrika", path: "/za" },
+  "356": { name: "Indien",       path: "/in" },
 };
 
 interface TooltipState {
@@ -59,17 +71,11 @@ const MapPage = () => {
   };
 
   const handleZoomIn = () => {
-    setPosition((prev) => ({
-      ...prev,
-      zoom: Math.min(prev.zoom * 1.5, 12),
-    }));
+    setPosition((prev) => ({ ...prev, zoom: Math.min(prev.zoom * 1.5, 12) }));
   };
 
   const handleZoomOut = () => {
-    setPosition((prev) => ({
-      ...prev,
-      zoom: Math.max(prev.zoom / 1.5, 1),
-    }));
+    setPosition((prev) => ({ ...prev, zoom: Math.max(prev.zoom / 1.5, 1) }));
   };
 
   const handleMouseMove = (
@@ -192,9 +198,7 @@ const MapPage = () => {
         <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
           <div
             style={{
-              width: 10,
-              height: 10,
-              borderRadius: "50%",
+              width: 10, height: 10, borderRadius: "50%",
               background: "#6b21a8",
               boxShadow: "0 0 6px rgba(107,33,168,0.8)",
             }}
