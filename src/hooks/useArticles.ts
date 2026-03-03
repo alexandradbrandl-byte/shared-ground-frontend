@@ -3,7 +3,7 @@ import { API_BASE, type Article, type Stats } from "@/lib/constants";
 
 export interface Filters {
   selectedTopics: string[];
-  selectedSources: string[];   // multi-select — empty means "all"
+  selectedSources: string[];
   timeRange: string | null;
   dateFrom: string;
   dateTo: string;
@@ -19,7 +19,7 @@ const defaultFilters: Filters = {
   search: "",
 };
 
-export function useArticles() {
+export function useArticles(country?: string) {
   const [articles, setArticles] = useState<Article[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -31,8 +31,9 @@ export function useArticles() {
       setLoading(true);
       setError(null);
       try {
+        const countryParam = country ? `&country=${country}` : "";
         const [articlesRes, statsRes] = await Promise.all([
-          fetch(`${API_BASE}/api/articles?limit=500`),
+          fetch(`${API_BASE}/api/articles?limit=500${countryParam}`),
           fetch(`${API_BASE}/api/stats`),
         ]);
         if (!articlesRes.ok || !statsRes.ok) throw new Error("Failed to fetch");
@@ -47,7 +48,7 @@ export function useArticles() {
       }
     }
     fetchData();
-  }, []);
+  }, [country]);
 
   const sources = useMemo(() => {
     const s = new Set(articles.map((a) => a.source).filter(Boolean));
@@ -67,23 +68,14 @@ export function useArticles() {
 
   const filteredArticles = useMemo(() => {
     return articles.filter((article) => {
-      // Topic filter (OR logic)
       if (filters.selectedTopics.length > 0) {
-        const articleTopics = (article.topics || "")
-          .split(",")
-          .map((t) => t.trim());
+        const articleTopics = (article.topics || "").split(",").map((t) => t.trim());
         if (!filters.selectedTopics.some((t) => articleTopics.includes(t))) return false;
       }
-
-      // Source filter (multi-select, OR logic)
       if (filters.selectedSources.length > 0) {
         if (!filters.selectedSources.includes(article.source)) return false;
       }
-
-      // Use published_at for date filtering, fall back to scraped_at
       const articleDate = new Date(article.published_at || article.scraped_at);
-
-      // Time range filter
       if (filters.timeRange) {
         const now = new Date();
         const startOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
@@ -94,8 +86,6 @@ export function useArticles() {
             break;
         }
       }
-
-      // Custom date range
       if (filters.dateFrom) {
         if (articleDate < new Date(filters.dateFrom)) return false;
       }
@@ -104,15 +94,12 @@ export function useArticles() {
         to.setDate(to.getDate() + 1);
         if (articleDate >= to) return false;
       }
-
-      // Search
       if (filters.search) {
         const q = filters.search.toLowerCase();
         const inTitle = (article.title || "").toLowerCase().includes(q);
         const inSummary = (article.summary || "").toLowerCase().includes(q);
         if (!inTitle && !inSummary) return false;
       }
-
       return true;
     });
   }, [articles, filters]);
