@@ -1,14 +1,79 @@
 import Masthead from "@/components/Masthead";
 import SiteFooter from "@/components/SiteFooter";
 
-const QUELLEN = {
-  "Allgemeine Nachrichten (nach Keywords gefiltert)": [
-    "Der Spiegel", "Zeit Online", "Süddeutsche Zeitung", "taz",
-    "Frankfurter Rundschau", "Der Standard", "Der Falter", "NZZ",
-    "SRF News", "ARD", "ZDF", "ORF", "Deutschlandfunk", "MDR", "WDR", "RBB",
+const QUELLEN_NACH_LAND: Record<string, string[]> = {
+  "Deutschland": [
+    "Spiegel Online", "Zeit Online", "FAZ", "Sueddeutsche Zeitung", "Die Welt",
+    "Tagesspiegel", "Focus Online", "Tagesschau", "ZDF heute", "Deutschlandfunk",
+    "BR24", "MDR Nachrichten", "NDR Nachrichten", "taz", "Freitag",
+    "EMMA", "queer.de", "L-MAG",
   ],
-  "Feministische Publikationen (alle Artikel)": ["EMMA", "Missy Magazine"],
-  "LGBTQIA+ Publikationen (alle Artikel)": ["queer.de", "L-MAG"],
+  "Österreich": [
+    "Der Standard", "ORF News", "Die Presse", "Kurier AT", "Kleine Zeitung",
+    "profil AT", "Falter AT", "News AT", "Moment AT", "Vienna AT",
+    "Wienerin", "Wiener Zeitung", "APA OTS",
+  ],
+  "Schweiz": [
+    "NZZ", "SRF News", "Tages-Anzeiger", "20 Minuten CH", "Blick CH",
+    "Watson CH", "Aargauer Zeitung", "Basler Zeitung", "Der Bund CH",
+    "RTS Info", "Le Temps", "Tribune de Geneve", "Swissinfo EN",
+    "Infosperber CH", "Republik CH",
+  ],
+  "Spanien": [
+    "El Pais", "El Mundo", "La Vanguardia", "El Confidencial", "elDiario.es",
+    "20minutos ES", "Publico ES", "El Periodico", "RTVE Noticias", "El Espanol",
+    "Cadena SER", "infoLibre", "ABC Espana", "El Huffpost ES", "Mujeres en Red",
+  ],
+  "Italien": [
+    "La Repubblica", "Corriere della Sera", "ANSA", "Il Fatto Quotidiano",
+    "Il Sole 24 Ore", "HuffPost Italia", "TGcom24", "Sky TG24", "Fanpage IT",
+    "Open Online", "Il Manifesto", "Internazionale", "AGI", "Rainews", "La Stampa",
+  ],
+  "USA": [
+    "NPR", "Reuters", "The Guardian US", "New York Times", "CNN", "NBC News",
+    "CBS News", "ABC News US", "Vox", "The Atlantic", "Politico",
+    "Ms. Magazine", "Human Rights Watch", "ACLU News", "Teen Vogue",
+  ],
+  "China": [
+    "CGTN", "Global Times", "South China Morning Post", "China Daily",
+    "Sixth Tone", "ChinaFile", "What's on Weibo", "Radii China",
+    "Hong Kong Free Press", "Taiwan News", "Caixin Global",
+    "Xinhua English", "People's Daily EN", "SupChina", "China Digital Times",
+  ],
+  "Uganda": [
+    "Daily Monitor UG", "New Vision UG", "Observer Uganda", "Nile Post",
+    "Chimp Reports", "The Independent UG", "Softpower Uganda", "URN Uganda",
+    "Kampala Post", "African Arguments UG", "Bukedde", "NTV Uganda",
+    "Kool FM Uganda", "Eagle Online UG", "The Tower Post UG",
+  ],
+  "Finnland": [
+    "Yle News EN", "Yle Uutiset FI", "Helsingin Sanomat", "Iltalehti",
+    "Ilta-Sanomat", "MTV Uutiset", "Kauppalehti", "Uusi Suomi", "Aamulehti",
+    "Turun Sanomat", "Vihrea Lanka", "Maaseudun Tulevaisuus",
+    "Savon Sanomat", "Kaleva FI", "Taloussanomat",
+  ],
+  "Türkei": [
+    "Hurriyet Daily News", "Daily Sabah", "Bianet EN", "Anadolu Agency EN",
+    "Cumhuriyet", "Hurriyet TR", "Milliyet", "Sabah TR", "BirGun",
+    "Gazete Duvar", "T24 TR", "Sozcu", "Haberturk", "Bianet TR", "Karar TR",
+  ],
+  "Iran": [
+    "Tehran Times", "Iran International", "IranWire", "IRNA English",
+    "Press TV", "Financial Tribune", "Iran Front Page", "Kayhan London",
+    "Iran Human Rights", "Radio Farda EN", "BBC Persian", "VOA Persian",
+    "Manoto News", "Iran Wire FA", "Zan Iran",
+  ],
+  "Südafrika": [
+    "Mail and Guardian", "Daily Maverick", "TimesLive", "News24",
+    "The Citizen ZA", "IOL ZA", "GroundUp", "Bhekisisa", "Eyewitness News",
+    "Maverick Citizen", "The South African", "Business Day ZA",
+    "African Arguments ZA", "Daily Sun ZA", "Feminist SA",
+  ],
+  "Indien": [
+    "The Hindu", "Times of India", "NDTV", "Indian Express", "Hindustan Times",
+    "The Wire IN", "Scroll.in", "The Print", "Feminism in India", "LiveMint",
+    "The Quint", "Outlook India", "News Laundry", "The Caravan IN", "Tribune India",
+  ],
 };
 
 const KEYWORDS = {
@@ -73,13 +138,13 @@ const UeberUnsPage = () => {
         </p>
 
         <SectionHeading>Unsere Quellen</SectionHeading>
-        {Object.entries(QUELLEN).map(([kategorie, namen]) => (
-          <div key={kategorie} className="mb-5">
+        {Object.entries(QUELLEN_NACH_LAND).map(([land, quellen]) => (
+          <div key={land} className="mb-5">
             <p className="text-xs text-muted-foreground uppercase tracking-wider mb-2 font-medium">
-              {kategorie}
+              {land}
             </p>
             <p className="text-[0.9rem] text-foreground leading-relaxed">
-              {namen.join(" · ")}
+              {quellen.join(" · ")}
             </p>
           </div>
         ))}
