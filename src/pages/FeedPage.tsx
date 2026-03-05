@@ -49,6 +49,7 @@ const FeedPage = ({ country, countryName }: FeedPageProps) => {
         articleCount={articles.length}
         isFiltered={isFiltered}
         clearFilters={clearFilters}
+        loading={loading}
       />
 
       <div className="pt-4 pb-8">

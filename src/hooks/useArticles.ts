@@ -41,8 +41,7 @@ export function useArticles(country?: string) {
       setOlderLoaded(false);
       try {
         const countryParam = country ? `&country=${encodeURIComponent(country)}` : "";
-        // Country pages: load only last 3 weeks initially (faster, smaller payload)
-        const timeParam = country ? `&date_from=${dateStrDaysAgo(21)}` : "";
+        // No date_from here — backend enforces a 90-day cap automatically
         const limit = country ? 100 : 500;
 
         const [articlesRes, statsRes] = await Promise.all([
@@ -153,6 +152,6 @@ export function useArticles(country?: string) {
     loadOlderArticles,
     loadingOlder,
     olderLoaded,
-    hasOlderAvailable: !!country && !olderLoaded,
+    hasOlderAvailable: false, // initial load already covers full 90-day window
   };
 }

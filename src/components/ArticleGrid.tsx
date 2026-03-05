@@ -40,7 +40,11 @@ const ArticleGrid = ({ articles, loading, error, isFiltered, clearFilters }: Pro
   if (articles.length === 0) {
     return (
       <div className="max-w-[1100px] mx-auto px-4 py-16 text-center">
-        <p className="text-muted-foreground text-sm mb-3">Keine Artikel gefunden.</p>
+        <p className="text-muted-foreground text-sm mb-3">
+          {isFiltered
+            ? "Keine Artikel für diese Filterauswahl gefunden."
+            : "Für dieses Land sind noch keine Artikel verfügbar."}
+        </p>
         {isFiltered && (
           <button onClick={clearFilters} className="text-xs text-primary hover:underline font-medium">
             Filter zurücksetzen

@@ -9,6 +9,7 @@ interface FilterBarProps {
   articleCount: number;
   isFiltered: boolean;
   clearFilters: () => void;
+  loading?: boolean;
 }
 
 const FilterBar = ({
@@ -18,6 +19,7 @@ const FilterBar = ({
   articleCount,
   isFiltered,
   clearFilters,
+  loading = false,
 }: FilterBarProps) => {
   const [searchInput, setSearchInput] = useState(filters.search);
   const [sourceOpen, setSourceOpen] = useState(false);
@@ -192,9 +194,11 @@ const FilterBar = ({
                 Alles löschen
               </button>
             )}
-            <span className="text-xs text-muted-foreground whitespace-nowrap">
-              {articleCount} Artikel
-            </span>
+            {!loading && (
+              <span className="text-xs text-muted-foreground whitespace-nowrap">
+                {articleCount} Artikel
+              </span>
+            )}
           </div>
         </div>
 
